@@ -1,8 +1,12 @@
 import sys
 
-from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QCheckBox, QLabel, QGridLayout, QTableWidget,
+from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QLabel, QGridLayout, QTableWidget,
                              QTableWidgetItem)
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtGui import QIcon
+
+
+# глобальные переменные - это зло
+users = []
 
 
 class Account:
@@ -40,7 +44,7 @@ class AccountsTable(QTableWidget):
 
         self.setRowCount(10)
         self.setColumnCount(6)
-        self.setItem(0, 0, QTableWidgetItem("Номер"))
+        self.setItem(0, 0, QTableWidgetItem("Id"))
         self.setItem(0, 1, QTableWidgetItem("Логин"))
         self.setItem(0, 2, QTableWidgetItem("Пароль"))
         self.setItem(0, 3, QTableWidgetItem("Статус"))
@@ -56,7 +60,7 @@ class AccountsTable(QTableWidget):
             button = QPushButton(f'Вкл/Выкл {i+1}')
             button.setCheckable(True)
             button.clicked.connect(self.pressedButtonOnOff)
-            self.setCellWidget( i+1, 5, button)
+            self.setCellWidget(i+1, 5, button)
 
     def pressedSettings(self, event):
         sender = int(self.sender().text()[-1])
@@ -70,6 +74,10 @@ class AccountsTable(QTableWidget):
                 raise Exception
             print(current_account_id, current_account_login, current_account_password, current_account_status)
             self.cellWidget(sender, 4).setStyleSheet("background-color: #E1E1E1")
+            user = Account(current_account_id, current_account_login, current_account_password, current_account_status,
+                                                                                                                   True)
+            users.append(user)
+            # open settings window
         except:
             self.cellWidget(sender, 4).setStyleSheet("background-color: red")
 
