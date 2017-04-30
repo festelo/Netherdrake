@@ -33,6 +33,7 @@ class AccountsTable(QTableWidget):
 
     def __init__(self):
         super().__init__()
+        self.size = 10
         self.initTable()
 
     def initTable(self):
@@ -42,7 +43,7 @@ class AccountsTable(QTableWidget):
         self.setAcceptDrops(True)
         self.setDragEnabled(True)
 
-        self.setRowCount(10)
+        self.setRowCount(self.size)
         self.setColumnCount(6)
         self.setItem(0, 0, QTableWidgetItem("Id"))
         self.setItem(0, 1, QTableWidgetItem("Логин"))
@@ -61,6 +62,12 @@ class AccountsTable(QTableWidget):
             button.setCheckable(True)
             button.clicked.connect(self.pressedButtonOnOff)
             self.setCellWidget(i+1, 5, button)
+
+    def addRow(self):
+        self.size += 1
+        self.setRowCount(self.size)
+        self.setCellWidget(self.size-1, 4, QPushButton(f'Настроки {self.size-1}'))
+        self.setCellWidget(self.size-1, 5, QPushButton(f'Вкл/Выкл {self.size-1}'))
 
     def pressedSettings(self, event):
         sender = int(self.sender().text()[-1])
@@ -101,7 +108,9 @@ class MainWindow(QWidget):
         self.grid = MainGrid()
         self.table = AccountsTable()
         self.addButton = QPushButton()
+        self.deleteButton = QPushButton()
 
+        self.initButtons()
         self.addWidgets()
         self.initUI()
 
@@ -109,13 +118,26 @@ class MainWindow(QWidget):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
         self.setLayout(self.grid)
         self.setWindowTitle('NetherDrake')
-        self.resize(625, 325)
+        self.resize(658, 324)
         self.show()
 
+    def initButtons(self):
+        self.addButton.setIcon(QIcon('resources/plus.png'))
+        self.addButton.clicked.connect(self.pressedAddButton)
+        self.deleteButton.setIcon(QIcon('resources/minus.png'))
+        self.deleteButton.clicked.connect(self.pressedDeleteButton)
+
     def addWidgets(self):
-        self.grid.addWidget(self.table, 0, 0, 0, 4)
-        self.grid.addWidget(self.addButton, 0, 1, 0, 0)
-        self.addButton.show()
+        self.grid.addWidget(self.table, 0, 0, 4, 1)
+        self.grid.addWidget(self.addButton, 0, 1)
+        self.grid.addWidget(self.deleteButton, 1, 1)
+
+    def pressedAddButton(self):
+        self.table.addRow()
+
+    def pressedDeleteButton(self):
+        self.table.size -= 1
+        self.table.removeRow(self.table.size)
 
 
 def main():
