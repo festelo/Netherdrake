@@ -66,11 +66,15 @@ class AccountsTable(QTableWidget):
     def addRow(self):
         self.size += 1
         self.setRowCount(self.size)
-        self.setCellWidget(self.size-1, 4, QPushButton(f'Настроки {self.size-1}'))
-        self.setCellWidget(self.size-1, 5, QPushButton(f'Вкл/Выкл {self.size-1}'))
+        button = QPushButton(f'Настроки {self.size-1}')
+        button.clicked.connect(self.pressedSettings)
+        self.setCellWidget(self.size-1, 4, button)
+        button = QPushButton(f'Вкл/Выкл {self.size-1}')
+        button.clicked.connect(self.pressedButtonOnOff)
+        self.setCellWidget(self.size-1, 5, button)
 
     def pressedSettings(self, event):
-        sender = int(self.sender().text()[-1])
+        sender = int(self.sender().text().split(' ')[-1])
         try:
             current_account_id = self.item(sender, 0).text()
             current_account_login = self.item(sender, 1).text()
@@ -136,8 +140,9 @@ class MainWindow(QWidget):
         self.table.addRow()
 
     def pressedDeleteButton(self):
-        self.table.size -= 1
-        self.table.removeRow(self.table.size)
+        if self.table.size != 1:
+            self.table.size -= 1
+            self.table.removeRow(self.table.size)
 
 
 def main():
