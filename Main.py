@@ -2,6 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QCheckBox, QLabel, QGridLayout, QTableWidget,
                              QTableWidgetItem)
+from PyQt5.QtGui import QIcon
 
 
 class Account:
@@ -55,7 +56,7 @@ class AccountsTable(QTableWidget):
             button = QPushButton(f'On/Off {i+1}')
             button.setCheckable(True)
             button.clicked.connect(self.pressedButtonOnOff)
-            self.setCellWidget(i+1, 5, button)
+            self.setCellWidget(i + 1, 5, button)
 
     def pressedSettings(self, event):
         sender = self.sender().text()[-1]
@@ -63,7 +64,7 @@ class AccountsTable(QTableWidget):
 
     def pressedButtonOnOff(self, event):
         sender = self.sender().text()[-1]
-        print(sender, event)
+
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasFormat('text/plain'):
@@ -86,16 +87,14 @@ class MainWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.setWindowIcon(QIcon('resources/icon.jpg'))
         self.setLayout(self.grid)
         self.setWindowTitle('NetherDrake')
-        self.resize(750, 400)
+        self.resize(625, 325)
         self.show()
 
     def addWidgets(self):
         self.grid.addWidget(self.table, 0, 0)
-        refreshButton = QPushButton()
-        # refreshButton.clicked.connect(refresh)
-        self.grid.addWidget(refreshButton, 0, 1)
 
 
 def main():
