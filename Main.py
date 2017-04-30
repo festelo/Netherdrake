@@ -32,6 +32,7 @@ class AccountsTable(QTableWidget):
 
     def initTable(self):
         self.horizontalHeader().hide()
+        self.verticalHeader().hide()
 
         self.setAcceptDrops(True)
         self.setDragEnabled(True)
@@ -46,10 +47,19 @@ class AccountsTable(QTableWidget):
         self.setItem(0, 5, QTableWidgetItem("On/Off"))
 
         for i in range(9):
-            button = QPushButton(f'On/Off {i}')
+            button = QPushButton(f'Settings {i+1}')
+            button.clicked.connect(self.pressedSettings)
+            self.setCellWidget(i + 1, 4, button)
+
+        for i in range(9):
+            button = QPushButton(f'On/Off {i+1}')
             button.setCheckable(True)
             button.clicked.connect(self.pressedButtonOnOff)
             self.setCellWidget(i+1, 5, button)
+
+    def pressedSettings(self, event):
+        sender = self.sender().text()[-1]
+        print(sender)
 
     def pressedButtonOnOff(self, event):
         sender = self.sender().text()[-1]
