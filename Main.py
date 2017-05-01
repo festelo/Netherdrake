@@ -1,9 +1,10 @@
 import sys
 
-from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QLabel, QGridLayout, QTableWidget,
-                             QTableWidgetItem)
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMainWindow
 
+from Settings import SettingsForAccount
 
 # глобальные переменные - это зло
 users = []
@@ -53,12 +54,17 @@ class AccountsTable(QTableWidget):
         self.setItem(0, 5, QTableWidgetItem("Вкл/Выкл"))
 
         for i in range(9):
+            self.setItem(i+1, 3, QTableWidgetItem('Не работает'))
+
+        for i in range(9):
             button = QPushButton(f'Настройки {i+1}')
+            button.setStyleSheet("background-color: #E1E1E1")
             button.clicked.connect(self.pressedSettings)
             self.setCellWidget(i+1, 4, button)
 
         for i in range(9):
             button = QPushButton(f'Вкл/Выкл {i+1}')
+            button.setStyleSheet("background-color: #E1E1E1")
             button.setCheckable(True)
             button.clicked.connect(self.pressedButtonOnOff)
             self.setCellWidget(i+1, 5, button)
@@ -66,10 +72,17 @@ class AccountsTable(QTableWidget):
     def addRow(self):
         self.size += 1
         self.setRowCount(self.size)
+
+        self.setItem(self.size-1, 3, QTableWidgetItem('Не работает'))
+
         button = QPushButton(f'Настроки {self.size-1}')
+        button.setStyleSheet("background-color: #E1E1E1")
         button.clicked.connect(self.pressedSettings)
         self.setCellWidget(self.size-1, 4, button)
+
         button = QPushButton(f'Вкл/Выкл {self.size-1}')
+        button.setStyleSheet("background-color: #E1E1E1")
+        button.setCheckable(True)
         button.clicked.connect(self.pressedButtonOnOff)
         self.setCellWidget(self.size-1, 5, button)
 
@@ -81,14 +94,15 @@ class AccountsTable(QTableWidget):
             current_account_password = self.item(sender, 2).text()
             current_account_status = self.item(sender, 3).text()
             if current_account_id == '' or current_account_login == '' or current_account_password == ''\
-                                                                        or current_account_status == '':
+                    or current_account_status == '':
                 raise Exception
             print(current_account_id, current_account_login, current_account_password, current_account_status)
             self.cellWidget(sender, 4).setStyleSheet("background-color: #E1E1E1")
             user = Account(current_account_id, current_account_login, current_account_password, current_account_status,
-                                                                                                                   True)
+                           True)
             users.append(user)
-            # open settings window
+            global settingsForAccountWindow
+            settingsForAccountWindow = SettingsForAccount(user)
         except:
             self.cellWidget(sender, 4).setStyleSheet("background-color: red")
 
@@ -113,6 +127,7 @@ class MainWindow(QWidget):
         self.table = AccountsTable()
         self.addButton = QPushButton()
         self.deleteButton = QPushButton()
+        self.settingsButton = QPushButton()
 
         self.initButtons()
         self.addWidgets()
@@ -122,19 +137,25 @@ class MainWindow(QWidget):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
         self.setLayout(self.grid)
         self.setWindowTitle('NetherDrake')
-        self.resize(658, 324)
+        self.resize(675, 325)
+        self.setMinimumSize(675, 325)
         self.show()
 
     def initButtons(self):
         self.addButton.setIcon(QIcon('resources/plus.png'))
         self.addButton.clicked.connect(self.pressedAddButton)
+
         self.deleteButton.setIcon(QIcon('resources/minus.png'))
         self.deleteButton.clicked.connect(self.pressedDeleteButton)
+
+        self.settingsButton.setIcon(QIcon('resources/six.png'))
+        self.settingsButton.clicked.connect(self.pressedSettingsButton)
 
     def addWidgets(self):
         self.grid.addWidget(self.table, 0, 0, 4, 1)
         self.grid.addWidget(self.addButton, 0, 1)
         self.grid.addWidget(self.deleteButton, 1, 1)
+        self.grid.addWidget(self.settingsButton, 2, 1)
 
     def pressedAddButton(self):
         self.table.addRow()
@@ -143,6 +164,9 @@ class MainWindow(QWidget):
         if self.table.size != 1:
             self.table.size -= 1
             self.table.removeRow(self.table.size)
+
+    def pressedSettingsButton(self):
+        pass
 
 
 def main():
