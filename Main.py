@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTa
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow
 
-from Settings import SettingsForAccount
+from SettingsForAccount import SettingsForAccount
+from Settings import SettingsWindow
 
 # глобальные переменные - это зло
 users = []
@@ -12,12 +13,15 @@ users = []
 
 class Account:
 
-    def __init__(self, vk_id, login, password, status, enabled):
-        self.id = vk_id
+    def __init__(self, number, login, password, status, enabled, group, post, commentary):
+        self.number = number
         self.login = login
         self.password = password
         self.status = status
         self.enabled = enabled
+        self.group = group
+        self.post = post
+        self.commentary = commentary
 
 
 class MainGrid(QGridLayout):
@@ -46,7 +50,7 @@ class AccountsTable(QTableWidget):
 
         self.setRowCount(self.size)
         self.setColumnCount(6)
-        self.setItem(0, 0, QTableWidgetItem("Id"))
+        self.setItem(0, 0, QTableWidgetItem("Имя"))
         self.setItem(0, 1, QTableWidgetItem("Логин"))
         self.setItem(0, 2, QTableWidgetItem("Пароль"))
         self.setItem(0, 3, QTableWidgetItem("Статус"))
@@ -86,37 +90,46 @@ class AccountsTable(QTableWidget):
         button.clicked.connect(self.pressedButtonOnOff)
         self.setCellWidget(self.size-1, 5, button)
 
+    def getRowInformation(self, sender):
+        current_account_id = sender
+        current_account_login = self.item(sender, 1).text()
+        current_account_password = self.item(sender, 2).text()
+        current_account_status = self.item(sender, 3).text()
+        if current_account_id == '' or current_account_login == '' or current_account_password == '' \
+                or current_account_status == '':
+            raise Exception
+        return current_account_id, current_account_login, current_account_password, current_account_status
+
     def pressedSettings(self, event):
         sender = int(self.sender().text().split(' ')[-1])
         try:
-            current_account_id = self.item(sender, 0).text()
-            current_account_login = self.item(sender, 1).text()
-            current_account_password = self.item(sender, 2).text()
-            current_account_status = self.item(sender, 3).text()
-            if current_account_id == '' or current_account_login == '' or current_account_password == ''\
-                    or current_account_status == '':
-                raise Exception
-            print(current_account_id, current_account_login, current_account_password, current_account_status)
+            current_account_id, current_account_login, current_account_password, current_account_status = \
+                self.getRowInformation(sender)
             self.cellWidget(sender, 4).setStyleSheet("background-color: #E1E1E1")
             user = Account(current_account_id, current_account_login, current_account_password, current_account_status,
-                           True)
+                           True, 0, 0, 0)
             users.append(user)
-            global settingsForAccountWindow
-            settingsForAccountWindow = SettingsForAccount(user)
+            self.createSettingsForAccountWindow(user)
         except:
             self.cellWidget(sender, 4).setStyleSheet("background-color: red")
 
+    @staticmethod
+    def createSettingsForAccountWindow(user):
+        global settingsForAccountWindow
+        settingsForAccountWindow = SettingsForAccount(user)
+
     def pressedButtonOnOff(self, event):
-        sender = self.sender().text()[-1]
-
-    def dragEnterEvent(self, e):
-        if e.mimeData().hasFormat('text/plain'):
-            e.accept()
+        if event:
+            try:
+                sender = int(self.sender().text().split(' ')[-1])
+                current_account_id, current_account_login, current_account_password, current_account_status = \
+                    self.getRowInformation(sender)
+                for user in users:
+                    print(user.group)
+            except:
+                self.cellWidget(sender, 4).setStyleSheet("background-color: red")
         else:
-            e.ignore()
-
-    def dropEvent(self, e):
-        self.setText(e.mimeData().text())
+            pass
 
 
 class MainWindow(QWidget):
@@ -165,8 +178,10 @@ class MainWindow(QWidget):
             self.table.size -= 1
             self.table.removeRow(self.table.size)
 
+    @staticmethod
     def pressedSettingsButton(self):
-        pass
+        global settingsWindow
+        settingsWindow = SettingsWindow()
 
 
 def main():

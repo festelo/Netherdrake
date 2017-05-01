@@ -1,10 +1,8 @@
-import sys
-
 from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QLabel, QTextEdit
 from PyQt5.QtGui import QIcon
 
 
-class SettingsForAccountGrid(QGridLayout):
+class SettingsGrid(QGridLayout):
 
     def __init__(self):
         super().__init__()
@@ -14,33 +12,16 @@ class SettingsForAccountGrid(QGridLayout):
         pass
 
 
-class SettingsForAccount(QWidget):
+class SettingsWindow(QWidget):
 
-    def __init__(self, user):
+    def __init__(self):
         super().__init__()
-        self.user = user
-        self.layout = SettingsForAccountGrid()
+        self.layout = SettingsGrid()
+        self.labelAntigate = QLabel('Ключ от antigate')
+        self.textEditAntigate = QTextEdit()
 
         self.addWidgets()
         self.initUI()
-
-    def addWidgets(self):
-        groupLabel = QLabel('Группа')
-        groupTextEdit = QTextEdit()
-        groupTextEdit.setMaximumSize(250, 25)
-        self.layout.addWidget(groupLabel, 0, 0)
-        self.layout.addWidget(groupTextEdit, 0, 1)
-
-        postLabel = QLabel('Пост')
-        postTextEdit = QTextEdit()
-        postTextEdit.setMaximumSize(250, 25)
-        self.layout.addWidget(postLabel, 1, 0)
-        self.layout.addWidget(postTextEdit, 1, 1)
-
-        commentaryLabel = QLabel('Комментарий')
-        commentaryTextEdit = QTextEdit()
-        self.layout.addWidget(commentaryLabel, 2, 0)
-        self.layout.addWidget(commentaryTextEdit, 2, 1, 50, 50)
 
     def initUI(self):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
@@ -48,3 +29,8 @@ class SettingsForAccount(QWidget):
         self.setWindowTitle('NetherDrake')
         self.resize(658, 324)
         self.show()
+
+    def addWidgets(self):
+        self.layout.addWidget(self.labelAntigate, 0, 0)
+        self.layout.addWidget(self.textEditAntigate, 0, 1)
+        self.textEditAntigate.setMaximumSize(450, 25)
