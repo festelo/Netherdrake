@@ -2,7 +2,6 @@ import sys
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow
 
 from SettingsForAccount import SettingsForAccount
 from Settings import SettingsWindow
@@ -90,7 +89,7 @@ class AccountsTable(QTableWidget):
         button.clicked.connect(self.pressedButtonOnOff)
         self.setCellWidget(self.size-1, 5, button)
 
-    def getRowInformation(self, sender):
+    def getRowInformation(self, sender) -> tuple:
         current_account_id = sender
         current_account_login = self.item(sender, 1).text()
         current_account_password = self.item(sender, 2).text()
@@ -125,11 +124,23 @@ class AccountsTable(QTableWidget):
                 current_account_id, current_account_login, current_account_password, current_account_status = \
                     self.getRowInformation(sender)
                 for user in users:
-                    print(user.group)
+                    if user.number == sender:
+                        self.doCommentaries(user)
+                        break
             except:
                 self.cellWidget(sender, 4).setStyleSheet("background-color: red")
         else:
             pass
+
+    def doCommentaries(self, user):
+        number = user.number
+        login = user.login
+        password = user.password
+        status = user.status
+        enabled = user.enabled
+        group = user.group
+        post = user.post
+        commentary = user.commentary
 
 
 class MainWindow(QWidget):
