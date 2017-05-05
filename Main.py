@@ -1,10 +1,16 @@
 import sys
+import time
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 
+import vk
+
 from SettingsForAccount import SettingsForAccount
 from Settings import SettingsWindow
+
+
+ID_APP = '5892536'
 
 # глобальные переменные - это зло
 users = []
@@ -57,6 +63,9 @@ class AccountsTable(QTableWidget):
         self.setItem(0, 5, QTableWidgetItem("Вкл/Выкл"))
 
         for i in range(9):
+            self.setItem(i+1, 0, QTableWidgetItem(str(i+1)))
+
+        for i in range(9):
             self.setItem(i+1, 3, QTableWidgetItem('Не работает'))
 
         for i in range(9):
@@ -76,6 +85,7 @@ class AccountsTable(QTableWidget):
         self.size += 1
         self.setRowCount(self.size)
 
+        self.setItem(self.size-1, 0, QTableWidgetItem(str(self.size-1)))
         self.setItem(self.size-1, 3, QTableWidgetItem('Не работает'))
 
         button = QPushButton(f'Настроки {self.size-1}')
@@ -90,7 +100,7 @@ class AccountsTable(QTableWidget):
         self.setCellWidget(self.size-1, 5, button)
 
     def getRowInformation(self, sender) -> tuple:
-        current_account_id = sender
+        current_account_id = self.item(sender, 0).text()
         current_account_login = self.item(sender, 1).text()
         current_account_password = self.item(sender, 2).text()
         current_account_status = self.item(sender, 3).text()
@@ -121,26 +131,40 @@ class AccountsTable(QTableWidget):
         if event:
             try:
                 sender = int(self.sender().text().split(' ')[-1])
-                current_account_id, current_account_login, current_account_password, current_account_status = \
-                    self.getRowInformation(sender)
                 for user in users:
-                    if user.number == sender:
-                        self.doCommentaries(user)
-                        break
+                    if int(user.number) == int(sender):
+                        try:
+                            self.doCommentaries(user)
+                        except:
+                            break
             except:
                 self.cellWidget(sender, 4).setStyleSheet("background-color: red")
         else:
             pass
 
     def doCommentaries(self, user):
-        number = user.number
-        login = user.login
-        password = user.password
-        status = user.status
-        enabled = user.enabled
-        group = user.group
-        post = user.post
-        commentary = user.commentary
+        number = str(user.number)
+        login = str(user.login)
+        password = str(user.password)
+        status = str(user.status)
+        enabled = str(user.enabled)
+        group = str(user.group)
+        post = str(user.post)
+        commentary = str(user.commentary)
+
+        # This one is for test
+        # number = '242757858'
+        # login = '79048284618'
+        # password = 'SJtVePtF'
+        # post = '182'
+        # commentary = 'ТЕСТИРУЕМ'
+
+        while True:
+            print(login, password, group, post, commentary)
+            session = vk.AuthSession(ID_APP, login, password, scope='groups, wall')
+            vkAPI = vk.API(session)
+            comments = vkAPI.wall.createComment(owner_id=group, post_id=post, message=commentary)
+            print(comments)
 
 
 class MainWindow(QWidget):
@@ -160,7 +184,7 @@ class MainWindow(QWidget):
     def initUI(self):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
         self.setLayout(self.grid)
-        self.setWindowTitle('NetherDrake')
+        self.setWindowTitle('VKcomments')
         self.resize(675, 325)
         self.setMinimumSize(675, 325)
         self.show()

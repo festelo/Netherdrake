@@ -1,5 +1,3 @@
-import sys
-
 from cx_Freeze import setup, Executable
 
 setup(
@@ -7,5 +5,5 @@ setup(
     version="1.0.0",
     description="Vk spam bot",
     executables=[Executable("Main.py", base="Win32GUI")],
-    requires=['PyQt5'],
+    requires=['PyQt5', 'vk'],
 )

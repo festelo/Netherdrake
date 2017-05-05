@@ -43,7 +43,7 @@ class SettingsForAccount(QWidget):
     def initUI(self):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
         self.setLayout(self.layout)
-        self.setWindowTitle('NetherDrake')
+        self.setWindowTitle('VKcomments')
         self.resize(658, 324)
         self.show()
 
@@ -51,4 +51,3 @@ class SettingsForAccount(QWidget):
         self.user.group = self.groupTextEdit.toPlainText()
         self.user.post = self.postTextEdit.toPlainText()
         self.user.commentary = self.commentaryTextEdit.toPlainText()
-        print(self.user.group, self.user.post, self.user.commentary)

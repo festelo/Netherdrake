@@ -26,7 +26,7 @@ class SettingsWindow(QWidget):
     def initUI(self):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
         self.setLayout(self.layout)
-        self.setWindowTitle('NetherDrake')
+        self.setWindowTitle('VKcomments')
         self.resize(658, 324)
         self.show()
 
