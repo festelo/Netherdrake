@@ -1,9 +1,9 @@
 import sys
 import time
+import multiprocessing
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
-
 import vk
 
 from SettingsForAccount import SettingsForAccount
@@ -135,8 +135,8 @@ class AccountsTable(QTableWidget):
                     if int(user.number) == int(sender):
                         try:
                             self.doCommentaries(user)
-                        except:
-                            break
+                        except Exception as error:
+                            print(error)
             except:
                 self.cellWidget(sender, 4).setStyleSheet("background-color: red")
         else:
@@ -153,18 +153,21 @@ class AccountsTable(QTableWidget):
         commentary = str(user.commentary)
 
         # This one is for test
-        # number = '242757858'
+        # group = '-145414283'
         # login = '79048284618'
         # password = 'SJtVePtF'
-        # post = '182'
+        # post = '1'
         # commentary = 'ТЕСТИРУЕМ'
 
         while True:
+            time.sleep(15)
             print(login, password, group, post, commentary)
             session = vk.AuthSession(ID_APP, login, password, scope='groups, wall')
             vkAPI = vk.API(session)
-            comments = vkAPI.wall.createComment(owner_id=group, post_id=post, message=commentary)
-            print(comments)
+            answer = vkAPI.wall.createComment(owner_id=group, post_id=post, message=commentary)
+            if 'cid' not in answer:
+                for key, val in answer:
+                    print(key, val)
 
 
 class MainWindow(QWidget):
