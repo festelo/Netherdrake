@@ -1,7 +1,5 @@
 import sys
 import time
-import asyncio
-from multiprocessing import Process
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
@@ -9,7 +7,7 @@ import vk
 
 from SettingsForAccount import SettingsForAccount
 from Settings import SettingsWindow
-
+from Account import Account
 
 ID_APP = '5892536'
 
@@ -23,28 +21,6 @@ users = []
 # password = 'SJtVePtF'
 # post = '182'
 # commentary = 'ТЕСТИРУЕМ'
-
-
-class Account:
-
-    def __init__(self, number, login, password, status, enabled, group, post, commentary):
-        self.number = number
-        self.login = login
-        self.password = password
-        self.status = status
-        self.enabled = enabled
-        self.group = group
-        self.post = post
-        self.commentary = commentary
-
-
-class SpecialSession(vk.AuthSession):
-
-    def __init__(self):
-        super().__init__()
-
-    def get_captcha_key(self, captcha_image_url):
-        return captcha_image_url
 
 
 class MainGrid(QGridLayout):
@@ -148,7 +124,7 @@ class AccountsTable(QTableWidget):
     def pressedButtonOnOff(self, event):
         self.TryToDoCommentaries(event)
 
-    def tryToDoCommentaries(self, event):
+    def TryToDoCommentaries(self, event):
         try:
             sender = self.getSender()
         except:
@@ -157,7 +133,7 @@ class AccountsTable(QTableWidget):
         if event:
             self.setItem(sender, 3, QTableWidgetItem('Работает'))
             try:
-                self.TryToDoCommentaries(sender)
+                self.doCommentaries(sender)
             except Exception as error:
                 print(error)
                 self.cellWidget(sender, 4).setStyleSheet("background-color: red")
