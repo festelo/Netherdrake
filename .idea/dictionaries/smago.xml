@@ -2,6 +2,8 @@
   <dictionary name="smago">
     <words>
       <w>antigate</w>
+      <w>asyncio</w>
+      <w>kcomments</w>
     </words>
   </dictionary>
 </component>

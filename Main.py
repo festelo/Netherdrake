@@ -1,6 +1,7 @@
 import sys
 import time
-import multiprocessing
+import asyncio
+from multiprocessing import Process
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
@@ -16,6 +17,14 @@ ID_APP = '5892536'
 users = []
 
 
+# This one is for test
+# group = '242757858'
+# login = '79048284618'
+# password = 'SJtVePtF'
+# post = '182'
+# commentary = 'ТЕСТИРУЕМ'
+
+
 class Account:
 
     def __init__(self, number, login, password, status, enabled, group, post, commentary):
@@ -27,6 +36,15 @@ class Account:
         self.group = group
         self.post = post
         self.commentary = commentary
+
+
+class SpecialSession(vk.AuthSession):
+
+    def __init__(self):
+        super().__init__()
+
+    def get_captcha_key(self, captcha_image_url):
+        return captcha_image_url
 
 
 class MainGrid(QGridLayout):
@@ -88,7 +106,7 @@ class AccountsTable(QTableWidget):
         self.setItem(self.size-1, 0, QTableWidgetItem(str(self.size-1)))
         self.setItem(self.size-1, 3, QTableWidgetItem('Не работает'))
 
-        button = QPushButton(f'Настроки {self.size-1}')
+        button = QPushButton(f'Настройки {self.size-1}')
         button.setStyleSheet("background-color: #E1E1E1")
         button.clicked.connect(self.pressedSettings)
         self.setCellWidget(self.size-1, 4, button)
@@ -128,46 +146,49 @@ class AccountsTable(QTableWidget):
         settingsForAccountWindow = SettingsForAccount(user)
 
     def pressedButtonOnOff(self, event):
+        self.TryToDoCommentaries(event)
+
+    def tryToDoCommentaries(self, event):
+        try:
+            sender = self.getSender()
+        except:
+            print('Не трогай NUMBER!!!')
+
         if event:
+            self.setItem(sender, 3, QTableWidgetItem('Работает'))
             try:
-                sender = int(self.sender().text().split(' ')[-1])
-                for user in users:
-                    if int(user.number) == int(sender):
-                        try:
-                            self.doCommentaries(user)
-                        except Exception as error:
-                            print(error)
-            except:
+                self.TryToDoCommentaries(sender)
+            except Exception as error:
+                print(error)
                 self.cellWidget(sender, 4).setStyleSheet("background-color: red")
+                self.setItem(sender, 3, QTableWidgetItem('Не работает'))
         else:
-            pass
+            self.setItem(sender, 3, QTableWidgetItem('Не работает*'))
 
-    def doCommentaries(self, user):
-        number = str(user.number)
-        login = str(user.login)
-        password = str(user.password)
-        status = str(user.status)
-        enabled = str(user.enabled)
-        group = str(user.group)
-        post = str(user.post)
-        commentary = str(user.commentary)
+    def doCommentaries(self, sender):
+        for user in users:
+            if int(user.number) == int(sender):
+                try:
+                    while True:
+                        self.workWithVK(user)
+                except Exception as error:
+                    print(error)
+                    # Обработать капчу
 
-        # This one is for test
-        # group = '-145414283'
-        # login = '79048284618'
-        # password = 'SJtVePtF'
-        # post = '1'
-        # commentary = 'ТЕСТИРУЕМ'
+    @staticmethod
+    def getUserData(user) -> tuple:
+        return str(user.login), str(user.password), str(user.group), str(user.post), str(user.commentary)
 
-        while True:
-            time.sleep(15)
-            print(login, password, group, post, commentary)
-            session = vk.AuthSession(ID_APP, login, password, scope='groups, wall')
-            vkAPI = vk.API(session)
-            answer = vkAPI.wall.createComment(owner_id=group, post_id=post, message=commentary)
-            if 'cid' not in answer:
-                for key, val in answer:
-                    print(key, val)
+    def workWithVK(self, user):
+        login, password, group, post, commentary = self.getUserData(user)
+        time.sleep(15)
+        session = vk.AuthSession(ID_APP, login, password, scope='groups, wall')
+        vkAPI = vk.API(session)
+        answer = vkAPI.wall.createComment(owner_id=group, post_id=post, message=commentary)
+        print(answer)
+
+    def getSender(self) -> int:
+        return int(self.sender().text().split(' ')[-1])
 
 
 class MainWindow(QWidget):
