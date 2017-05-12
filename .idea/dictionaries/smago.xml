@@ -3,7 +3,10 @@
     <words>
       <w>antigate</w>
       <w>asyncio</w>
+      <w>coro</w>
+      <w>coroutine</w>
       <w>kcomments</w>
+      <w>rucaptcha</w>
     </words>
   </dictionary>
 </component>

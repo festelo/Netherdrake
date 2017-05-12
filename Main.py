@@ -3,7 +3,10 @@ import time
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
-import vk
+
+import vk_api
+import requests
+from captcha_solver import CaptchaSolver
 
 from SettingsForAccount import SettingsForAccount
 from Settings import SettingsWindow
@@ -21,7 +24,8 @@ users = []
 # password = 'SJtVePtF'
 # post = '182'
 # commentary = 'ТЕСТИРУЕМ'
-
+# key = 'f80a3556ca4dc00429658b3e98da6dbd'
+# my_key = 'ff3af383514f2d28685cc7922472933d'
 
 class MainGrid(QGridLayout):
 
@@ -134,12 +138,13 @@ class AccountsTable(QTableWidget):
             self.setItem(sender, 3, QTableWidgetItem('Работает'))
             try:
                 self.doCommentaries(sender)
-            except Exception as error:
-                print(error)
-                self.cellWidget(sender, 4).setStyleSheet("background-color: red")
+            except:
                 self.setItem(sender, 3, QTableWidgetItem('Не работает'))
         else:
-            self.setItem(sender, 3, QTableWidgetItem('Не работает*'))
+            self.setItem(sender, 3, QTableWidgetItem('Не работает'))
+            for user in users:
+                if int(user.number) == int(sender):
+                    del user
 
     def doCommentaries(self, sender):
         for user in users:
@@ -149,7 +154,6 @@ class AccountsTable(QTableWidget):
                         self.workWithVK(user)
                 except Exception as error:
                     print(error)
-                    # Обработать капчу
 
     @staticmethod
     def getUserData(user) -> tuple:
@@ -157,11 +161,31 @@ class AccountsTable(QTableWidget):
 
     def workWithVK(self, user):
         login, password, group, post, commentary = self.getUserData(user)
-        time.sleep(15)
-        session = vk.AuthSession(ID_APP, login, password, scope='groups, wall')
-        vkAPI = vk.API(session)
-        answer = vkAPI.wall.createComment(owner_id=group, post_id=post, message=commentary)
-        print(answer)
+        vk_session = vk_api.VkApi(login, password, captcha_handler=self.captcha_handler)
+
+        vk_session.authorization()
+
+        vk = vk_session.get_api()
+        answer = vk.wall.createComment(owner_id=group, post_id=post, message=commentary)
+        print('Answer from VK: ' + str(answer))
+
+    @staticmethod
+    def captcha_handler(captcha):
+        from Settings import RUCAPTCHA_KEY
+
+        url = captcha.get_url()
+
+        image_url = requests.get(url)
+        img = image_url.content
+
+        file = open('tmp.jpg', "wb")
+        file.write(img)
+        file.close()
+
+        solver = CaptchaSolver('rucaptcha', api_key=RUCAPTCHA_KEY)
+        raw_data = open('tmp.jpg', 'rb').read()
+
+        return captcha.try_again(solver.solve_captcha(raw_data))
 
     def getSender(self) -> int:
         return int(self.sender().text().split(' ')[-1])

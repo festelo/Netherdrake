@@ -1,9 +1,9 @@
 from cx_Freeze import setup, Executable
 
 setup(
-    name='NetherDrake',
-    version="1.0.0",
+    name='VKcomments',
+    version="1.1.0",
     description="Vk spam bot",
     executables=[Executable("Main.py", base="Win32GUI")],
-    requires=['PyQt5', 'vk'],
+    requires=['PyQt5', 'vk_api', 'requests', 'captcha_solver'],
 )

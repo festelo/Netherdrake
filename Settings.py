@@ -2,6 +2,9 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QTextEdit
 from PyQt5.QtGui import QIcon
 
 
+RUCAPTCHA_KEY = 'TEST'
+
+
 class SettingsGrid(QGridLayout):
 
     def __init__(self):
@@ -17,7 +20,7 @@ class SettingsWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.layout = SettingsGrid()
-        self.labelAntigate = QLabel('Ключ от antigate')
+        self.labelAntigate = QLabel('Ключ от RuCaptcha')
         self.textEditAntigate = QTextEdit()
 
         self.addWidgets()
@@ -34,3 +37,7 @@ class SettingsWindow(QWidget):
         self.layout.addWidget(self.labelAntigate, 0, 0)
         self.layout.addWidget(self.textEditAntigate, 0, 1)
         self.textEditAntigate.setMaximumSize(450, 25)
+
+    def closeEvent(self, QCloseEvent):
+        global RUCAPTCHA_KEY
+        RUCAPTCHA_KEY = self.textEditAntigate.toPlainText()
