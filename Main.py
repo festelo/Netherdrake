@@ -114,7 +114,7 @@ class AccountsTable(QTableWidget):
                 self.getRowInformation(sender)
             self.cellWidget(sender, 4).setStyleSheet("background-color: #E1E1E1")
             user = Account(current_account_id, current_account_login, current_account_password, current_account_status,
-                           True, 0, 0, 0)
+                           True, 0, 0, 0, 0)
             users.append(user)
             self.createSettingsForAccountWindow(user)
         except:
@@ -157,17 +157,19 @@ class AccountsTable(QTableWidget):
 
     @staticmethod
     def getUserData(user) -> tuple:
-        return str(user.login), str(user.password), str(user.group), str(user.post), str(user.commentary)
+        return str(user.login), str(user.password), str(user.group), str(user.post), str(user.commentary), str(user.interval)
 
     def workWithVK(self, user):
-        login, password, group, post, commentary = self.getUserData(user)
-        vk_session = vk_api.VkApi(login, password, captcha_handler=self.captcha_handler)
+        login, password, group, post, commentary, interval = self.getUserData(user)
 
+        vk_session = vk_api.VkApi(login, password, captcha_handler=self.captcha_handler)
         vk_session.authorization()
 
         vk = vk_session.get_api()
         answer = vk.wall.createComment(owner_id=group, post_id=post, message=commentary)
         print('Answer from VK: ' + str(answer))
+
+        time.sleep(interval)
 
     @staticmethod
     def captcha_handler(captcha):

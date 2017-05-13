@@ -1,6 +1,6 @@
 class Account:
 
-    def __init__(self, number, login, password, status, enabled, group, post, commentary):
+    def __init__(self, number, login, password, status, enabled, group, post, commentary, interval):
         self.number = number
         self.login = login
         self.password = password
@@ -9,3 +9,4 @@ class Account:
         self.group = group
         self.post = post
         self.commentary = commentary
+        self.interval = interval

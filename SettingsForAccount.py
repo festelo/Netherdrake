@@ -22,6 +22,9 @@ class SettingsForAccount(QWidget):
         self.postTextEdit = QTextEdit()
         self.commentaryLabel = QLabel('Комментарий')
         self.commentaryTextEdit = QTextEdit()
+        self.intervalLabel = QLabel('Интервал')
+        self.intervalTextEdit = QTextEdit()
+        self.secondsLabel = QLabel('с')
         self.user = user
         self.layout = SettingsForAccountGrid()
 
@@ -30,7 +33,7 @@ class SettingsForAccount(QWidget):
 
     def addWidgets(self):
         self.groupTextEdit.setMaximumSize(250, 25)
-        self.layout.addWidget(self.groupLabel, 0, 0)
+        self.layout.addWidget(self.groupLabel, 0, 0, 1, 1)
         self.layout.addWidget(self.groupTextEdit, 0, 1)
 
         self.postTextEdit.setMaximumSize(250, 25)
@@ -39,6 +42,12 @@ class SettingsForAccount(QWidget):
 
         self.layout.addWidget(self.commentaryLabel, 2, 0)
         self.layout.addWidget(self.commentaryTextEdit, 2, 1, 50, 50)
+
+        self.intervalTextEdit.setMaximumSize(50, 25)
+        self.layout.addWidget(self.intervalLabel, 53, 0)
+        self.layout.addWidget(self.intervalTextEdit, 53, 1)
+
+        self.layout.addWidget(self.secondsLabel, 53, 2)
 
     def initUI(self):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
@@ -51,3 +60,4 @@ class SettingsForAccount(QWidget):
         self.user.group = self.groupTextEdit.toPlainText()
         self.user.post = self.postTextEdit.toPlainText()
         self.user.commentary = self.commentaryTextEdit.toPlainText()
+        self.user.interval = self.intervalTextEdit.toPlainText()
