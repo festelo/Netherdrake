@@ -10,3 +10,4 @@ class Account:
         self.post = post
         self.commentary = commentary
         self.interval = interval
+        self.isWorking = False

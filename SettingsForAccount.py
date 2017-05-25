@@ -16,16 +16,24 @@ class SettingsForAccount(QWidget):
 
     def __init__(self, user):
         super().__init__()
+        self.user = user
+
         self.groupLabel = QLabel('Группа')
         self.groupTextEdit = QTextEdit()
+        self.groupTextEdit.setText(str(user.group))
+
         self.postLabel = QLabel('Пост')
         self.postTextEdit = QTextEdit()
+        self.postTextEdit.setText(str(user.post))
+
         self.commentaryLabel = QLabel('Комментарий')
         self.commentaryTextEdit = QTextEdit()
-        self.intervalLabel = QLabel('Интервал')
+        self.commentaryTextEdit.setText(str(user.commentary))
+
+        self.intervalLabel = QLabel('Интервал (в секундах)')
         self.intervalTextEdit = QTextEdit()
-        self.secondsLabel = QLabel('с')
-        self.user = user
+        self.intervalTextEdit.setText(str(user.interval))
+
         self.layout = SettingsForAccountGrid()
 
         self.addWidgets()
@@ -46,8 +54,6 @@ class SettingsForAccount(QWidget):
         self.intervalTextEdit.setMaximumSize(50, 25)
         self.layout.addWidget(self.intervalLabel, 53, 0)
         self.layout.addWidget(self.intervalTextEdit, 53, 1)
-
-        self.layout.addWidget(self.secondsLabel, 53, 2)
 
     def initUI(self):
         self.setWindowIcon(QIcon('resources/icon.jpg'))
